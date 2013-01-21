@@ -12,6 +12,7 @@ class UserTemplate extends DataObject {
 		'Description'	=> 'Varchar',
 		'Use'			=> "Enum('Layout,Master')",
 		'Content'		=> 'Text',
+		'ContentFile'	=> 'Varchar(132)',
 	);
 	
 	public static $many_many = array(
@@ -26,14 +27,12 @@ class UserTemplate extends DataObject {
 	 **/
 	protected static $js_folder = 'custom-theme/javascript';
 
-
 	/**
 	 * folder for custom css files
 	 * @var string
 	 **/
 	protected static $css_folder = 'custom-theme/css'; 
 
-	
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
 		
@@ -44,18 +43,45 @@ class UserTemplate extends DataObject {
 
 		$fields->removeByName('CustomCSSFiles');
 		$fields->removeByName('CustomJSFiles');
-		
+
+		$templates = $this->fileBasedTemplates();
+		if (count($templates)) {
+			$fields->push($dd = new DropdownField('ContentFile', _t('UserTemplatesExtension.CONTENT_FILE', 'File containing template'), $templates));
+			$dd->setRightTitle('If selected, any Content set above will be ignored');
+		} else {
+			$fields->removeByName('ContentFile');
+		}
+
 		$fields->push($cssFiles);
 		$fields->push($jsFiles);
-		
-		
-		
+
 		return $fields;
+	}
+
+	protected function fileBasedTemplates() {
+		$templates = array('' => 'None');
+		foreach (glob(Director::baseFolder() . '/' . THEMES_DIR .'/*', GLOB_ONLYDIR) as $theme) {
+			$themeName = ucfirst(basename($theme));
+			if (is_dir($theme .'/user-templates')) {
+				foreach (glob($theme.'/user-templates/*.ss') as $templateFile) {
+					$templates[$templateFile] = $themeName . ' - ' . basename($templateFile);
+				}
+			}
+		}
+		
+		return $templates;
 	}
 	
 	public function onBeforeWrite() {
 		parent::onBeforeWrite();
 		$this->Title = FileNameFilter::create()->filter($this->Title);
+		
+		if (strlen($this->ContentFile)) {
+			$templates = $this->fileBasedTemplates();
+			if (!isset($templates[$this->ContentFile])) {
+				$this->ContentFile = '';
+			}
+		}
 	}
 	
 	public function onAfterWrite() {
@@ -68,8 +94,12 @@ class UserTemplate extends DataObject {
 		$file = $this->getTemplateFile();
 		file_put_contents($file, $this->Content);
 	}
-	
+
 	public function getTemplateFile() {
+		if (strlen($this->ContentFile) && file_exists($this->ContentFile)) {
+			return $this->ContentFile;
+		}
+
 		$dir = BASE_PATH . '/usertemplates/template-cache/' . $this->Use . '/';
 		Filesystem::makeFolder($dir);
 		$file = $dir . '/' . $this->Title . '.ss';
