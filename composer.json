@@ -1,0 +1,17 @@
+{
+	"name": "silverstripe/usertemplates",
+	"description": "Provides user-definable templates within the CMS that can be applied to content trees. Allows specification of Layout and main templates, as well as associating css + js files",
+	"type": "silverstripe-module",
+	"keywords": ["silverstripe", "templates", "themes"],
+	"license": "BSD-3-Clause",
+	"authors": [
+	{
+		"name": "Marcus Nyeholt",
+		"email": "marcus@silverstirpe.com.au"
+	}
+	],
+	"require":
+	{
+		"silverstripe/cms": ">=3.0.0"
+	}
+}
