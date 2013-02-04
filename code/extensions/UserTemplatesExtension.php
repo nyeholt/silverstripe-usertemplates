@@ -37,18 +37,31 @@ class UserTemplatesExtension extends DataExtension {
 		return $fields;
 	}
 	
-	public function effectiveTemplate($type = 'Master') {
+	/**
+	 * 
+	 * @param string $type
+	 *					Whether to get a master or layout template
+	 * @param string $action
+	 *					If there's a specific action involved for the template
+	 * @return type
+	 */
+	public function effectiveTemplate($type = 'Master', $action = null) {
 		$name = $type . 'Template';
 		$id = $name . 'ID';
 		if ($this->owner->$id) {
-			return $this->owner->getComponent($name);
+			$template = $this->owner->getComponent($name);
+			if ($action) {
+				// see if there's an override for this specific action
+				$template = $template->getActionOverride($action);
+			}
+			return $template;
 		}
-		
+
 		if ($this->owner->InheritTemplateSettings && $this->owner->ParentID) {
-			return $this->owner->Parent()->effectiveTemplate($type);
+			return $this->owner->Parent()->effectiveTemplate($type, $action);
 		}
 	}
-	
+
 }
 
 class UserTemplatesControllerExtension extends Extension {
@@ -61,13 +74,11 @@ class UserTemplatesControllerExtension extends Extension {
 			$viewer->setTemplateFile('main', $master->getTemplateFile());
 		}
 
-		$layout = $this->owner->data()->effectiveTemplate('Layout');
+		$layout = $this->owner->data()->effectiveTemplate('Layout', $action);
 
 		if ($layout && $layout->ID) {
-			if ($action == 'index') {
-				$layout->includeRequirements();
-				$viewer->setTemplateFile('Layout', $layout->getTemplateFile());
-			}
+			$layout->includeRequirements();
+			$viewer->setTemplateFile('Layout', $layout->getTemplateFile());
 		}
 	}
 }

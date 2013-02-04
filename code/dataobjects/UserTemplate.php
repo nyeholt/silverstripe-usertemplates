@@ -8,13 +8,14 @@
  */
 class UserTemplate extends DataObject {
 	public static $db = array(
-		'Title'			=> 'Varchar',
-		'Description'	=> 'Varchar',
-		'Use'			=> "Enum('Layout,Master')",
-		'Content'		=> 'Text',
-		'ContentFile'	=> 'Varchar(132)',
+		'Title'				=> 'Varchar',
+		'Description'		=> 'Varchar',
+		'Use'				=> "Enum('Layout,Master')",
+		'Content'			=> 'Text',
+		'ContentFile'		=> 'Varchar(132)',
+		'ActionTemplates'	=> 'MultiValueField',
 	);
-	
+
 	public static $many_many = array(
 		'CustomCSSFiles' => 'File',
 		'CustomJSFiles' => 'File'
@@ -51,7 +52,15 @@ class UserTemplate extends DataObject {
 		} else {
 			$fields->removeByName('ContentFile');
 		}
-
+		
+		$templates = DataList::create('UserTemplate')->filter(array('ID:Negation' => $this->ID));
+		if ($templates->count()) {
+			$templates = $templates->map();
+			$fields->push($kv = new KeyValueField('ActionTemplates', _t('UserTemplates.ACTION_TEMPLATES', 'Action specific templates'), array(), $templates));
+			$kv->setRightTitle(_t('UserTemplates.ACTION_TEMPLATES_HELP', 'Specify an action name and select another user defined template to handle a specific action. Only used for Layout templates'));
+		}
+		
+		
 		$fields->push($cssFiles);
 		$fields->push($jsFiles);
 
@@ -93,6 +102,21 @@ class UserTemplate extends DataObject {
 	protected function generateCacheFile() {
 		$file = $this->getTemplateFile();
 		file_put_contents($file, $this->Content);
+	}
+	
+	/**
+	 * Return an override template for a specific action if given
+	 * 
+	 * @param string $action
+	 */
+	public function getActionOverride($action) {
+		if ($this->ActionTemplates) {
+			$actions = $this->ActionTemplates->getValues();
+			if ($actions && isset($actions[$action])) {
+				return DataList::create('UserTemplate')->byID($actions[$action]);
+			}
+		}
+		return $this;
 	}
 
 	public function getTemplateFile() {
