@@ -47,7 +47,7 @@ class UserTemplate extends DataObject {
 
 		$templates = $this->fileBasedTemplates();
 		if (count($templates)) {
-			$fields->push($dd = new DropdownField('ContentFile', _t('UserTemplatesExtension.CONTENT_FILE', 'File containing template'), $templates));
+			$fields->addFieldToTab('Root.Main', $dd = new DropdownField('ContentFile', _t('UserTemplatesExtension.CONTENT_FILE', 'File containing template'), $templates));
 			$dd->setRightTitle('If selected, any Content set above will be ignored');
 		} else {
 			$fields->removeByName('ContentFile');
@@ -56,13 +56,13 @@ class UserTemplate extends DataObject {
 		$templates = DataList::create('UserTemplate')->filter(array('ID:Negation' => $this->ID));
 		if ($templates->count()) {
 			$templates = $templates->map();
-			$fields->push($kv = new KeyValueField('ActionTemplates', _t('UserTemplates.ACTION_TEMPLATES', 'Action specific templates'), array(), $templates));
+			$fields->addFieldToTab('Root.Main', $kv = new KeyValueField('ActionTemplates', _t('UserTemplates.ACTION_TEMPLATES', 'Action specific templates'), array(), $templates));
 			$kv->setRightTitle(_t('UserTemplates.ACTION_TEMPLATES_HELP', 'Specify an action name and select another user defined template to handle a specific action. Only used for Layout templates'));
 		}
 		
 		
-		$fields->push($cssFiles);
-		$fields->push($jsFiles);
+		$fields->addFieldToTab('Root.Main', $cssFiles);
+		$fields->addFieldToTab('Root.Main', $jsFiles);
 
 		return $fields;
 	}
