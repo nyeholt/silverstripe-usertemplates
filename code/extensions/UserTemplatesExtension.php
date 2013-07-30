@@ -19,8 +19,8 @@ class UserTemplatesExtension extends DataExtension {
 		$layouts = DataList::create('UserTemplate')->filter(array('Use' => 'Layout'));
 		$masters = DataList::create('UserTemplate')->filter(array('Use' => 'Master'));
 
-		$fields->addFieldToTab('Root.Theme', DropdownField::create('MasterTemplateID', 'Master Template', $masters->map(), '', null, 'None'));
-		$fields->addFieldToTab('Root.Theme', DropdownField::create('LayoutTemplateID', 'Layout Template', $layouts->map(), '', null, 'None'));
+		$fields->addFieldToTab('Root.Theme', DropdownField::create('MasterTemplateID', 'Master Template', $masters->map(), '', null)->setEmptyString('None'));
+		$fields->addFieldToTab('Root.Theme', DropdownField::create('LayoutTemplateID', 'Layout Template', $layouts->map(), '', null)->setEmptyString('None'));
 		$fields->addFieldToTab('Root.Theme', CheckboxField::create('InheritTemplateSettings', 'Inherit Settings'));
 		
 		$effectiveMaster = $this->effectiveTemplate();
