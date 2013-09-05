@@ -13,6 +13,7 @@ class UserTemplate extends DataObject {
 		'Use'				=> "Enum('Layout,Master')",
 		'Content'			=> 'Text',
 		'ContentFile'		=> 'Varchar(132)',
+		'StrictActions'		=> 'Boolean',
 		'ActionTemplates'	=> 'MultiValueField',
 	);
 
@@ -53,13 +54,20 @@ class UserTemplate extends DataObject {
 			$fields->removeByName('ContentFile');
 		}
 		
+		$fields->push($strict = CheckboxField::create('StrictActions', _t('UserTemplates.STRICT_ACTIONS', 'Require actions to be explicitly overridden')));
+		$text = <<<DOC
+   When applied to a page type that has sub-actions, an action template will be used ONLY if the action is listed below, and this main
+	   template will only be used for the 'index' action. If this is not checked, then this template will be used for ALL actions 
+	   in the page it is applied to. 
+DOC;
+		$strict->setRightTitle(_t('UserTemplates.STRICT_HELP', $text));
+		
 		$templates = DataList::create('UserTemplate')->filter(array('ID:Negation' => $this->ID));
 		if ($templates->count()) {
 			$templates = $templates->map();
 			$fields->push($kv = new KeyValueField('ActionTemplates', _t('UserTemplates.ACTION_TEMPLATES', 'Action specific templates'), array(), $templates));
 			$kv->setRightTitle(_t('UserTemplates.ACTION_TEMPLATES_HELP', 'Specify an action name and select another user defined template to handle a specific action. Only used for Layout templates'));
 		}
-		
 		
 		$fields->push($cssFiles);
 		$fields->push($jsFiles);
@@ -73,6 +81,7 @@ class UserTemplate extends DataObject {
 			$themeName = ucfirst(basename($theme));
 			if (is_dir($theme .'/user-templates')) {
 				foreach (glob($theme.'/user-templates/*.ss') as $templateFile) {
+					$templateFile = str_replace(Director::baseFolder() . '/', '', $templateFile);
 					$templates[$templateFile] = $themeName . ' - ' . basename($templateFile);
 				}
 			}
@@ -92,15 +101,15 @@ class UserTemplate extends DataObject {
 			}
 		}
 	}
-	
+
 	public function onAfterWrite() {
 		if (strlen($this->Content)) {
 			$this->generateCacheFile();
 		}
 	}
-	
+
 	protected function generateCacheFile() {
-		$file = $this->getTemplateFile();
+		$file = $this->getCacheFilename();
 		file_put_contents($file, $this->Content);
 	}
 	
@@ -118,12 +127,36 @@ class UserTemplate extends DataObject {
 		}
 		return $this;
 	}
-
+	
+	/**
+	 * Get a filename that represents the 
+	 * 
+	 * @return string
+	 */
 	public function getTemplateFile() {
-		if (strlen($this->ContentFile) && file_exists($this->ContentFile)) {
-			return $this->ContentFile;
+		if (strlen($this->ContentFile)) {
+			$templateFile = Director::baseFolder() . '/' . $this->ContentFile;
+			if (file_exists($templateFile)) {
+				return $templateFile;
+			}
 		}
 
+		$file = $this->getCacheFilename();
+		if (!@filesize($file)) {
+			clearstatcache();
+			$this->generateCacheFile();
+			return $file;
+		}
+
+		return $file;
+	}
+	
+	/**
+	 * Get the name of the cache file
+	 * 
+	 * @return string
+	 */
+	protected function getCacheFilename() {
 		$dir = BASE_PATH . '/usertemplates/template-cache/' . $this->Use . '/';
 		Filesystem::makeFolder($dir);
 		$file = $dir . '/' . $this->Title . '.ss';

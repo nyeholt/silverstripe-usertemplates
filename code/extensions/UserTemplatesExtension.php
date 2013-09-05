@@ -19,8 +19,8 @@ class UserTemplatesExtension extends DataExtension {
 		$layouts = DataList::create('UserTemplate')->filter(array('Use' => 'Layout'));
 		$masters = DataList::create('UserTemplate')->filter(array('Use' => 'Master'));
 
-		$fields->addFieldToTab('Root.Theme', DropdownField::create('MasterTemplateID', 'Master Template', $masters->map(), '', null, 'None'));
-		$fields->addFieldToTab('Root.Theme', DropdownField::create('LayoutTemplateID', 'Layout Template', $layouts->map(), '', null, 'None'));
+		$fields->addFieldToTab('Root.Theme', DropdownField::create('MasterTemplateID', 'Master Template', $masters->map(), '', null)->setEmptyString('None'));
+		$fields->addFieldToTab('Root.Theme', DropdownField::create('LayoutTemplateID', 'Layout Template', $layouts->map(), '', null)->setEmptyString('None'));
 		$fields->addFieldToTab('Root.Theme', CheckboxField::create('InheritTemplateSettings', 'Inherit Settings'));
 		
 		$effectiveMaster = $this->effectiveTemplate();
@@ -50,9 +50,16 @@ class UserTemplatesExtension extends DataExtension {
 		$id = $name . 'ID';
 		if ($this->owner->$id) {
 			$template = $this->owner->getComponent($name);
-			if ($action) {
+			if ($action && $action != 'index') {
 				// see if there's an override for this specific action
-				$template = $template->getActionOverride($action);
+				$override = $template->getActionOverride($action);
+				
+				// if the template is strict, then we MUST have the action defined
+				// otherwise we need to return null - so we set $template IF this is the case, 
+				// regardless of whether we found an override, OR if the override was set
+				if ($template->StrictActions || $override) {
+					$template = $override;
+				}
 			}
 			return $template;
 		}

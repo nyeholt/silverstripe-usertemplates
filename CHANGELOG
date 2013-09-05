@@ -1,3 +1,8 @@
+2013-09-05 v1.0.0
+-----------------
+
+* Added StrictActions option to allow for handling of sub-actions on pages
+
 2013-02-04 v0.3.0
 -----------------
 

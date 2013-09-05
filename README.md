@@ -35,4 +35,5 @@ be used.
 
 ## Requirements
 
-SS3
+* SilverStripe 3.0.x
+* MultiValueField module - https://github.com/nyeholt/silverstripe-multivaluefield
