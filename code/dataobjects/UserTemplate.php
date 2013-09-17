@@ -126,7 +126,6 @@ DOC;
 				return DataList::create('UserTemplate')->byID($actions[$action]);
 			}
 		}
-		return $this;
 	}
 	
 	/**
