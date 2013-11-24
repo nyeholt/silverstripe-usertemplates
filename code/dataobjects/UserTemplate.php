@@ -62,7 +62,7 @@ class UserTemplate extends DataObject {
 DOC;
 		$strict->setRightTitle(_t('UserTemplates.STRICT_HELP', $text));
 		
-		$templates = DataList::create('UserTemplate')->filter(array('ID:Negation' => $this->ID));
+		$templates = DataList::create('UserTemplate')->filter(array('ID:Not' => $this->ID));
 		if ($templates->count()) {
 			$templates = $templates->map();
 			$fields->addFieldToTab('Root.Main', $kv = new KeyValueField('ActionTemplates', _t('UserTemplates.ACTION_TEMPLATES', 'Action specific templates'), array(), $templates));
