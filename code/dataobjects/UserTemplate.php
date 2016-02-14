@@ -21,8 +21,8 @@ class UserTemplate extends DataObject {
 		'CustomCSSFiles' => 'File',
 		'CustomJSFiles' => 'File'
 	);
-	
-	
+
+
 	/**
 	 * folder for custom javascript files
 	 * @var string
@@ -33,11 +33,11 @@ class UserTemplate extends DataObject {
 	 * folder for custom css files
 	 * @var string
 	 **/
-	protected static $css_folder = 'custom-theme/css'; 
+	protected static $css_folder = 'custom-theme/css';
 
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
-		
+
 		$cssFiles = new UploadField('CustomCSSFiles',_t('UserTemplatesExtension.CustomCSSFiles',"Custom CSS Files"));
 		$jsFiles = new UploadField('CustomJSFiles',_t('UserTemplatesExtension.CustomJSFiles',"Custom JS Files"));
 		$cssFiles->setFolderName(self::$css_folder);
@@ -53,23 +53,23 @@ class UserTemplate extends DataObject {
 		} else {
 			$fields->removeByName('ContentFile');
 		}
-		
+
 		$fields->push($strict = CheckboxField::create('StrictActions', _t('UserTemplates.STRICT_ACTIONS', 'Require actions to be explicitly overridden')));
 		$text = <<<DOC
    When applied to a page type that has sub-actions, an action template will be used ONLY if the action is listed below, and this main
-	   template will only be used for the 'index' action. If this is not checked, then this template will be used for ALL actions 
-	   in the page it is applied to. 
+	   template will only be used for the 'index' action. If this is not checked, then this template will be used for ALL actions
+	   in the page it is applied to.
 DOC;
 		$strict->setRightTitle(_t('UserTemplates.STRICT_HELP', $text));
-		
+
 		$templates = DataList::create('UserTemplate')->filter(array('ID:not' => $this->ID));
 		if ($templates->count()) {
 			$templates = $templates->map();
 			$fields->addFieldToTab('Root.Main', $kv = new KeyValueField('ActionTemplates', _t('UserTemplates.ACTION_TEMPLATES', 'Action specific templates'), array(), $templates));
 			$kv->setRightTitle(_t('UserTemplates.ACTION_TEMPLATES_HELP', 'Specify an action name and select another user defined template to handle a specific action. Only used for Layout templates'));
 		}
-		
-		
+
+
 		$fields->addFieldToTab('Root.Main', $cssFiles);
 		$fields->addFieldToTab('Root.Main', $jsFiles);
 
@@ -87,14 +87,14 @@ DOC;
 				}
 			}
 		}
-		
+
 		return $templates;
 	}
-	
+
 	public function onBeforeWrite() {
 		parent::onBeforeWrite();
 		$this->Title = FileNameFilter::create()->filter($this->Title);
-		
+
 		if (strlen($this->ContentFile)) {
 			$templates = $this->fileBasedTemplates();
 			if (!isset($templates[$this->ContentFile])) {
@@ -113,10 +113,10 @@ DOC;
 		$file = $this->getCacheFilename();
 		file_put_contents($file, $this->Content);
 	}
-	
+
 	/**
 	 * Return an override template for a specific action if given
-	 * 
+	 *
 	 * @param string $action
 	 */
 	public function getActionOverride($action) {
@@ -127,10 +127,10 @@ DOC;
 			}
 		}
 	}
-	
+
 	/**
-	 * Get a filename that represents the 
-	 * 
+	 * Get a filename that represents the
+	 *
 	 * @return string
 	 */
 	public function getTemplateFile() {
@@ -150,10 +150,10 @@ DOC;
 
 		return $file;
 	}
-	
+
 	/**
 	 * Get the name of the cache file
-	 * 
+	 *
 	 * @return string
 	 */
 	protected function getCacheFilename() {
@@ -166,7 +166,7 @@ DOC;
 		}
 		return $file;
 	}
-	
+
 	public function includeRequirements() {
 		$obj = $this->CustomCSSFiles();
 		if ($obj) {
@@ -174,13 +174,13 @@ DOC;
 				Requirements::css($file->Filename);
 			}
 		}
-		
+
 		$obj = $this->CustomJSFiles();
 		if ($obj) {
 			foreach ($obj as $file) {
 				Requirements::javascript($file->Filename);
 			}
 		}
-		
+
 	}
 }
