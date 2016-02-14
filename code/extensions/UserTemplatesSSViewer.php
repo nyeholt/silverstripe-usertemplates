@@ -11,7 +11,7 @@ class UserTemplatesSSViewer extends SSViewer {
 				return Security::permissionFailure(null, 'Please log in as an administrator to flush the template cache.');
 			}
 		}
-		
+
 		if(!is_array($templateList) && substr((string) $templateList,-3) == '.ss') {
 			$this->chosenTemplates['main'] = $templateList;
 		} else {
@@ -25,11 +25,11 @@ class UserTemplatesSSViewer extends SSViewer {
 
 		if(!$this->chosenTemplates) {
 		  $templateList = (is_array($templateList)) ? $templateList : array($templateList);
-		  
+
 		  user_error("None of these templates can be found in theme '"
 			. self::current_theme() . "': ". implode(".ss, ", $templateList) . ".ss", E_USER_WARNING);
 		}
-	}	
+	}
 
 
 }

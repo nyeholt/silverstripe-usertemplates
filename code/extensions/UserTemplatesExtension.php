@@ -1,16 +1,16 @@
 <?php
 
 class UserTemplatesExtension extends DataExtension {
-	
+
 	public static $db = array(
 		'InheritTemplateSettings'	=> 'Boolean',
 	);
-	
+
 	public static $has_one = array(
 		'MasterTemplate'			=> 'UserTemplate',
 		'LayoutTemplate'			=> 'UserTemplate',
 	);
-	
+
 	public static $defaults = array(
 		'InheritTemplateSettings'		=> 1
 	);
@@ -22,23 +22,23 @@ class UserTemplatesExtension extends DataExtension {
 		$fields->addFieldToTab('Root.Theme', DropdownField::create('MasterTemplateID', 'Master Template', $masters->map(), '', null)->setEmptyString('None'));
 		$fields->addFieldToTab('Root.Theme', DropdownField::create('LayoutTemplateID', 'Layout Template', $layouts->map(), '', null)->setEmptyString('None'));
 		$fields->addFieldToTab('Root.Theme', CheckboxField::create('InheritTemplateSettings', 'Inherit Settings'));
-		
+
 		$effectiveMaster = $this->effectiveTemplate();
 		$effectiveLayout = $this->effectiveTemplate('Layout');
-		
+
 		if($effectiveMaster){
-			$fields->addFieldToTab('Root.Theme', ReadonlyField::create('EffectiveMaster', 'Effective master template', $effectiveMaster->Title));	
+			$fields->addFieldToTab('Root.Theme', ReadonlyField::create('EffectiveMaster', 'Effective master template', $effectiveMaster->Title));
 		}
-		
+
 		if($effectiveLayout){
-			$fields->addFieldToTab('Root.Theme', ReadonlyField::create('EffectiveLayout', 'Effective layout template', $effectiveLayout->Title));	
+			$fields->addFieldToTab('Root.Theme', ReadonlyField::create('EffectiveLayout', 'Effective layout template', $effectiveLayout->Title));
 		}
-		
+
 		return $fields;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param string $type
 	 *					Whether to get a master or layout template
 	 * @param string $action
@@ -53,9 +53,9 @@ class UserTemplatesExtension extends DataExtension {
 			if ($action && $action != 'index') {
 				// see if there's an override for this specific action
 				$override = $template->getActionOverride($action);
-				
+
 				// if the template is strict, then we MUST have the action defined
-				// otherwise we need to return null - so we set $template IF this is the case, 
+				// otherwise we need to return null - so we set $template IF this is the case,
 				// regardless of whether we found an override, OR if the override was set
 				if ($template->StrictActions || $override) {
 					$template = $override;
@@ -72,7 +72,7 @@ class UserTemplatesExtension extends DataExtension {
 }
 
 class UserTemplatesControllerExtension extends Extension {
-	
+
 	public function updateViewer($action, $viewer) {
 		$master = $this->owner->data()->effectiveTemplate('Master');
 		if ($master && $master->ID) {
