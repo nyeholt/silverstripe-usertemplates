@@ -6,7 +6,7 @@
  * @author marcus@silverstripe.com.au
  * @license BSD License http://silverstripe.org/bsd-license/
  */
-class UserTemplate extends DataObject {
+class UserTemplate extends DataObject implements PermissionProvider{
 	public static $db = array(
 		'Title'				=> 'Varchar',
 		'Description'		=> 'Varchar',
@@ -183,4 +183,42 @@ DOC;
 		}
 
 	}
+	
+	public function canView($member = null){
+		return true;
+	}
+
+	public function canEdit($member = null) {
+		return Permission::check('ADMIN') || Permission::check('TEMPLATE_EDIT');
+	}
+
+	public function canDelete($member = null) {
+		return Permission::check('ADMIN') || Permission::check('TEMPLATE_DELETE');
+	}
+
+	public function canCreate($member = null) {
+		return Permission::check('ADMIN') || Permission::check('TEMPLATE_CREATE');
+	}
+
+	public function canPublish($member = null) {
+		return Permission::check('ADMIN') || Permission::check('TEMPLATE_PUBLISH');
+	}
+
+	public function providePermissions() {
+		return array(
+			'TEMPLATE_EDIT' => array(
+				'name' => 'Edit a Template',
+				'category' => 'Template',
+			),
+			'TEMPLATE_DELETE' => array(
+				'name' => 'Delete a Template',
+				'category' => 'Template',
+			),
+			'TEMPLATE_CREATE' => array(
+				'name' => 'Create a Template',
+				'category' => 'Template'
+			)
+		);
+	}
+	
 }
