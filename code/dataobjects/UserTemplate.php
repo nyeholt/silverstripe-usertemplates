@@ -171,14 +171,14 @@ DOC;
 		$obj = $this->CustomCSSFiles();
 		if ($obj) {
 			foreach ($obj as $file) {
-				Requirements::css($file->FileURL());
+				Requirements::css($file->getURL());
 			}
 		}
 
 		$obj = $this->CustomJSFiles();
 		if ($obj) {
 			foreach ($obj as $file) {
-				Requirements::javascript($file->FileURL());
+				Requirements::javascript($file->getURL());
 			}
 		}
 
