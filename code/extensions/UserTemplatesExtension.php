@@ -4,6 +4,7 @@ class UserTemplatesExtension extends DataExtension {
 
 	public static $db = array(
 		'InheritTemplateSettings'	=> 'Boolean',
+        'NotInherited'              => 'Boolean',
 	);
 
 	public static $has_one = array(
@@ -22,7 +23,8 @@ class UserTemplatesExtension extends DataExtension {
 		$fields->addFieldToTab('Root.Theme', DropdownField::create('MasterTemplateID', 'Master Template', $masters->map(), '', null)->setEmptyString('None'));
 		$fields->addFieldToTab('Root.Theme', DropdownField::create('LayoutTemplateID', 'Layout Template', $layouts->map(), '', null)->setEmptyString('None'));
 		$fields->addFieldToTab('Root.Theme', CheckboxField::create('InheritTemplateSettings', 'Inherit Settings'));
-
+        $fields->addFieldToTab('Root.Theme', CheckboxField::create('NotInherited', 'Don\'t cascade these templates to children'));
+        
 		$effectiveMaster = $this->effectiveTemplate();
 		$effectiveLayout = $this->effectiveTemplate('Layout');
 
@@ -43,12 +45,18 @@ class UserTemplatesExtension extends DataExtension {
 	 *					Whether to get a master or layout template
 	 * @param string $action
 	 *					If there's a specific action involved for the template
+     * @param int $forItem
+     *                  The item we're getting the template for. Used to determine
+     *                  whether the 'NotInherited' flag is checked
 	 * @return type
 	 */
-	public function effectiveTemplate($type = 'Master', $action = null) {
+	public function effectiveTemplate($type = 'Master', $action = null, $forItem = 0) {
 		$name = $type . 'Template';
 		$id = $name . 'ID';
-		if ($this->owner->$id) {
+        
+        $skipInheritance = $this->owner->NotInherited && $forItem > 0 && $forItem != $this->owner->ID;
+        
+		if (!$skipInheritance && $this->owner->$id) {
 			$template = $this->owner->getComponent($name);
 			if ($action && $action != 'index') {
 				// see if there's an override for this specific action
@@ -63,9 +71,13 @@ class UserTemplatesExtension extends DataExtension {
 			}
 			return $template;
 		}
+        
+        if (!$forItem) {
+            $forItem = $this->owner->ID;
+        }
 
 		if ($this->owner->InheritTemplateSettings && $this->owner->ParentID) {
-			return $this->owner->Parent()->effectiveTemplate($type, $action);
+			return $this->owner->Parent()->effectiveTemplate($type, $action, $forItem);
 		}
 	}
 
