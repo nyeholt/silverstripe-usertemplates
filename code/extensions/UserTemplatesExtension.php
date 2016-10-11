@@ -88,4 +88,13 @@ class UserTemplatesControllerExtension extends Extension {
 			$viewer->setTemplateFile('Layout', $layout->getTemplateFile());
 		}
 	}
+    
+    /**
+     * Update the list of templates used by mediawesome
+     * 
+     * @param array $templates
+     */
+    public function updateTemplates(&$templates) {
+        $templates = $this->owner->getViewer('index');
+    }
 }
