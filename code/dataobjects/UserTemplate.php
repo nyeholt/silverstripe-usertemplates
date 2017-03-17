@@ -159,7 +159,8 @@ DOC;
 	protected function getCacheFilename() {
 		$dir = BASE_PATH . '/usertemplates/template-cache/' . $this->Use . '/';
 		Filesystem::makeFolder($dir);
-		$file = $dir . '/' . $this->Title . '.ss';
+        $dateStamp = strtotime($this->LastEdited);
+		$file = $dir . '/' . $this->Title . '-' . $dateStamp . '.ss';
 		if (!file_exists($file)) {
 			touch($file);
 			chmod($file, 0664);

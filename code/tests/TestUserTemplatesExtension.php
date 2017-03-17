@@ -3,7 +3,7 @@
 class TestUserTemplatesExtension extends SapphireTest {
 	protected $requiredExtensions = array(
 		"SiteTree" => array("UserTemplatesExtension"),
-		'Page_Controller' => 'UserTemplatesControllerExtension'
+		'Page_Controller' => array('UserTemplatesControllerExtension')
 	);
 
 	public function testCreateUserDefinedTemplate() {
@@ -62,4 +62,29 @@ class TestUserTemplatesExtension extends SapphireTest {
 		$size = filesize($file);
 		$this->assertTrue($size > 0);
 	}
+
+    public function testRegenerateOnChange() {
+        $this->logInWithPermission();
+
+		$ut = new UserTemplate();
+		$ut->Title = 'Template 1';
+		$ut->Use = 'Layout';
+		$ut->Content = 'UserTemplate 1 $Content';
+
+		$ut->write();
+
+		$file = $ut->getTemplateFile();
+
+        $ut->Content = "New template";
+
+        sleep(2);
+        $ut->write();
+
+        $nextFile = $ut->getTemplateFile();
+
+        $basename = basename($nextFile);
+
+        $this->assertNotEquals($file, $nextFile);
+        $this->assertEquals($ut->Title . '-' . strtotime($ut->LastEdited) . '.ss', $basename);
+    }
 }
