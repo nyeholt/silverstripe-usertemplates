@@ -15,15 +15,10 @@
         }
     ],
     "require": {
-        "silverstripe/cms": ">=3.0.0",
+        "silverstripe/cms": "~3.0",
         "silverstripe/multivaluefield": "~2.0",
         "silverstripe/framework": "^3.1"
     },
-	"extra": {
-		"branch-alias": {
-			"dev-master": "1.2.x-dev"
-		}
-	},
     "support": {
         "issues": "https://github.com/nyeholt/silverstripe-usertemplates/issues"
     },
