@@ -1,7 +1,7 @@
 {
-    "name": "silverstripe/usertemplates",
+    "name": "symbiote/silverstripe-usertemplates",
     "description": "Provides user-definable templates within the CMS that can be applied to content trees. Allows specification of Layout and main templates, as well as associating css + js files",
-    "type": "silverstripe-module",
+    "type": "silverstripe-vendormodule",
     "keywords": [
         "silverstripe",
         "templates",
@@ -11,17 +11,17 @@
     "authors": [
         {
             "name": "Marcus Nyeholt",
-            "email": "marcus@silverstirpe.com.au"
+            "email": "marcus@symbiote.com.au"
         }
     ],
     "require": {
-        "silverstripe/cms": ">=3.0.0",
-        "silverstripe/multivaluefield": "~2.0",
-        "silverstripe/framework": "^3.1"
+        "silverstripe/cms": "~4.0",
+        "symbiote/silverstripe-multivaluefield": "~5.0",
+        "silverstripe/framework": "~4.0"
     },
 	"extra": {
 		"branch-alias": {
-			"dev-master": "1.2.x-dev"
+			"dev-master": "2.0.x-dev"
 		}
 	},
     "support": {
