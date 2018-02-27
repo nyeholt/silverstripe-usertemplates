@@ -3,6 +3,7 @@
 namespace Symbiote\UserTemplates;
 
 use SilverStripe\Core\Extension;
+use SilverStripe\Control\Controller;
 
 /**
  * 
@@ -29,22 +30,16 @@ class UserTemplatesControllerExtension extends Extension {
 	}
 
     /**
-     * Update the list of templates used by mediawesome
+     * Update the list of templates used by mediawesome and extensible search.
      *
      * @param array $templates
      */
     public function updateTemplates(&$templates) {
-//        $templates = $this->owner->getViewer('index');
-        if ($this->owner instanceof \nglasl\extensible\ExtensibleSearchPageController) {
-            $layout = $this->owner->data()->effectiveTemplate('Layout', 'getSearchResults');
-
-            if ($layout && $layout->ID) {
-                $layout->includeRequirements();
-                array_unshift($templates, $layout->getTemplateFile());
-//                $viewer->setTemplateFile('Layout', $layout->getTemplateFile());
-            }
+        $req = $this->owner instanceof Controller ? $this->owner->getRequest() : null;
+        $action = null;
+        if ($req) {
+            $action = $req->param('Action');
         }
-        $finder = $this->owner->getViewer('index');
-        $o = 1;
+        $templates = $this->owner->getViewer($action);
     }
 }

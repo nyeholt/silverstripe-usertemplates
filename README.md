@@ -1,9 +1,9 @@
-# SilverStripe UserTemplates
+# UserTemplates
 
 Allows cms users to apply templates that are created and defined within the
-CMS directly, including CSS and JavaScript files
+CMS directly, including CSS and JavaScript files, to trees of content. 
 
-## Installation
+## Getting started
 
 Add the following to your Page\_Controller class:
 
@@ -45,7 +45,7 @@ to use.
 If "Inherit" is set, then any parent page with a custom template defined will
 be used.
 
-## Requirements
 
-* SilverStripe 3.0.x
-* MultiValueField module - https://github.com/nyeholt/silverstripe-multivaluefield
+## Credits
+
+Icon via https://icons8.com/license/

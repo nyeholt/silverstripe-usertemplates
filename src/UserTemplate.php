@@ -18,9 +18,6 @@ use SilverStripe\ORM\FieldType\DBBoolean;
 use SilverStripe\Security\Permission;
 use SilverStripe\Security\PermissionProvider;
 use SilverStripe\View\Requirements;
-use SilverStripe\View\ThemeResourceLoader;
-
-
 
 
 /**
