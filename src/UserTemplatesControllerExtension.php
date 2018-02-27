@@ -13,12 +13,15 @@ use SilverStripe\Control\Controller;
 
 class UserTemplatesControllerExtension extends Extension {
 
+    private static $use_custom_view = null;
+
 	public function updateViewer($action, $viewer) {
 		$master = $this->owner->data()->effectiveTemplate('Master');
 		if ($master && $master->ID) {
 			// set the main template
 			$master->includeRequirements();
 			$viewer->setTemplateFile('main', $master->getTemplateFile());
+            self::$use_custom_view = true;
 		}
 
 		$layout = $this->owner->data()->effectiveTemplate('Layout', $action);
@@ -26,6 +29,7 @@ class UserTemplatesControllerExtension extends Extension {
 		if ($layout && $layout->ID) {
 			$layout->includeRequirements();
 			$viewer->setTemplateFile('Layout', $layout->getTemplateFile());
+            self::$use_custom_view = true;
 		}
 	}
 
@@ -40,6 +44,11 @@ class UserTemplatesControllerExtension extends Extension {
         if ($req) {
             $action = $req->param('Action');
         }
-        $templates = $this->owner->getViewer($action);
+
+        $viewer = $this->owner->getViewer($action);
+        if (self::$use_custom_view) {
+            $templates = $viewer;
+            self::$use_custom_view = false;
+        }
     }
 }
