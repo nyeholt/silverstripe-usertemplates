@@ -15,6 +15,18 @@ Add the following to your Page\_Controller class:
         return $viewer;
     }
 
+
+Add configuration to bind the extension into place
+
+```
+SilverStripe\CMS\Model\SiteTree:
+  extensions: 
+    - Symbiote\UserTemplates\UserTemplatesExtension
+PageController:
+  extensions:
+    - Symbiote\UserTemplates\UserTemplatesControllerExtension
+```
+
 ## Usage
 
 Create a new template from the admin/templates section.

@@ -1,5 +1,28 @@
 <?php
 
+namespace Symbiote\UserTemplates;
+
+use Symbiote\MultiValueField\Fields\KeyValueField;
+use Symbiote\UserTemplates\UserTemplate;
+
+use SilverStripe\AssetAdmin\Forms\UploadField;
+use SilverStripe\Assets\File;
+use SilverStripe\Assets\FileNameFilter;
+use SilverStripe\Assets\Filesystem;
+use SilverStripe\Control\Director;
+use SilverStripe\Forms\CheckboxField;
+use SilverStripe\Forms\DropdownField;
+use SilverStripe\ORM\DataList;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\ORM\FieldType\DBBoolean;
+use SilverStripe\Security\Permission;
+use SilverStripe\Security\PermissionProvider;
+use SilverStripe\View\Requirements;
+use SilverStripe\View\ThemeResourceLoader;
+
+
+
+
 /**
  * A template that a user can create and apply within the system
  *
@@ -7,19 +30,22 @@
  * @license BSD License http://silverstripe.org/bsd-license/
  */
 class UserTemplate extends DataObject implements PermissionProvider{
-	public static $db = array(
+
+    private static $table_name = 'UserTemplate';
+    
+	private static $db = array(
 		'Title'				=> 'Varchar',
 		'Description'		=> 'Varchar',
 		'Use'				=> "Enum('Layout,Master')",
 		'Content'			=> 'Text',
 		'ContentFile'		=> 'Varchar(132)',
-		'StrictActions'		=> 'Boolean',
+		'StrictActions'		=> DBBoolean::class,
 		'ActionTemplates'	=> 'MultiValueField',
 	);
 
-	public static $many_many = array(
-		'CustomCSSFiles' => 'File',
-		'CustomJSFiles' => 'File'
+	private static $many_many = array(
+		'CustomCSSFiles' => File::class,
+		'CustomJSFiles' => File::class
 	);
 
 
@@ -48,7 +74,7 @@ class UserTemplate extends DataObject implements PermissionProvider{
 
 		$templates = $this->fileBasedTemplates();
 		if (count($templates)) {
-			$fields->addFieldToTab('Root.Main', $dd = new DropdownField('ContentFile', _t('UserTemplatesExtension.CONTENT_FILE', 'File containing template'), $templates));
+			$fields->addFieldToTab('Root.Main', $dd = DropdownField::create('ContentFile', _t('UserTemplatesExtension.CONTENT_FILE', 'File containing template'), $templates)->setEmptyString('-- none --'));
 			$dd->setRightTitle('If selected, any Content set above will be ignored');
 		} else {
 			$fields->removeByName('ContentFile');
@@ -62,12 +88,14 @@ class UserTemplate extends DataObject implements PermissionProvider{
 DOC;
 		$strict->setRightTitle(_t('UserTemplates.STRICT_HELP', $text));
 
-		$templates = DataList::create('UserTemplate')->filter(array('ID:not' => $this->ID));
+		$templates = DataList::create(UserTemplate::class)->filter(array('ID:not' => $this->ID));
 		if ($templates->count()) {
 			$templates = $templates->map();
 			$fields->addFieldToTab('Root.Main', $kv = new KeyValueField('ActionTemplates', _t('UserTemplates.ACTION_TEMPLATES', 'Action specific templates'), array(), $templates));
 			$kv->setRightTitle(_t('UserTemplates.ACTION_TEMPLATES_HELP', 'Specify an action name and select another user defined template to handle a specific action. Only used for Layout templates'));
-		}
+		} else {
+            $fields->removeByName('ActionTemplates');
+        }
 
 
 		$fields->addFieldToTab('Root.Main', $cssFiles);
@@ -78,7 +106,7 @@ DOC;
 
 	protected function fileBasedTemplates() {
 		$templates = array('' => 'None');
-		foreach (glob(Director::baseFolder() . '/' . THEMES_DIR .'/*', GLOB_ONLYDIR) as $theme) {
+        foreach (glob(Director::baseFolder() . '/' . THEMES_DIR .'/*', GLOB_ONLYDIR) as $theme) {
 			$themeName = ucfirst(basename($theme));
 			if (is_dir($theme .'/user-templates')) {
 				foreach (glob($theme.'/user-templates/*.ss') as $templateFile) {
@@ -123,7 +151,7 @@ DOC;
 		if ($this->ActionTemplates) {
 			$actions = $this->ActionTemplates->getValues();
 			if ($actions && isset($actions[$action])) {
-				return DataList::create('UserTemplate')->byID($actions[$action]);
+				return DataList::create(UserTemplate::class)->byID($actions[$action]);
 			}
 		}
 	}
@@ -185,23 +213,23 @@ DOC;
 
 	}
 	
-	public function canView($member = null){
+	public function canView($member = null, $context = array()){
 		return true;
 	}
 
-	public function canEdit($member = null) {
+	public function canEdit($member = null, $context = array()) {
 		return Permission::check('ADMIN') || Permission::check('TEMPLATE_EDIT');
 	}
 
-	public function canDelete($member = null) {
+	public function canDelete($member = null, $context = array()) {
 		return Permission::check('ADMIN') || Permission::check('TEMPLATE_DELETE');
 	}
 
-	public function canCreate($member = null) {
+	public function canCreate($member = null, $context = array()) {
 		return Permission::check('ADMIN') || Permission::check('TEMPLATE_CREATE');
 	}
 
-	public function canPublish($member = null) {
+	public function canPublish($member = null, $context = array()) {
 		return Permission::check('ADMIN') || Permission::check('TEMPLATE_PUBLISH');
 	}
 
