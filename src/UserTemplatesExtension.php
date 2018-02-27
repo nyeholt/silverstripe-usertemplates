@@ -1,24 +1,39 @@
 <?php
 
+namespace Symbiote\UserTemplates;
+
+use Symbiote\UserTemplates\UserTemplate;
+
+use SilverStripe\ORM\FieldType\DBBoolean;
+use SilverStripe\Forms\FieldList;
+use SilverStripe\ORM\DataList;
+use SilverStripe\Forms\DropdownField;
+use SilverStripe\Forms\CheckboxField;
+use SilverStripe\Forms\ReadonlyField;
+use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
+
+
+
 class UserTemplatesExtension extends DataExtension {
 
-	public static $db = array(
-		'InheritTemplateSettings'	=> 'Boolean',
-        'NotInherited'              => 'Boolean',
+	private static $db = array(
+		'InheritTemplateSettings'	=> DBBoolean::class,
+        'NotInherited'              => DBBoolean::class,
 	);
 
-	public static $has_one = array(
-		'MasterTemplate'			=> 'UserTemplate',
-		'LayoutTemplate'			=> 'UserTemplate',
+	private static $has_one = array(
+		'MasterTemplate'			=> UserTemplate::class,
+		'LayoutTemplate'			=> UserTemplate::class,
 	);
 
-	public static $defaults = array(
+	private static $defaults = array(
 		'InheritTemplateSettings'		=> 1
 	);
 
 	public function updateSettingsFields(FieldList $fields) {
-		$layouts = DataList::create('UserTemplate')->filter(array('Use' => 'Layout'));
-		$masters = DataList::create('UserTemplate')->filter(array('Use' => 'Master'));
+		$layouts = DataList::create(UserTemplate::class)->filter(array('Use' => 'Layout'));
+		$masters = DataList::create(UserTemplate::class)->filter(array('Use' => 'Master'));
 
 		$fields->addFieldToTab('Root.Theme', DropdownField::create('MasterTemplateID', 'Master Template', $masters->map(), '', null)->setEmptyString('None'));
 		$fields->addFieldToTab('Root.Theme', DropdownField::create('LayoutTemplateID', 'Layout Template', $layouts->map(), '', null)->setEmptyString('None'));
@@ -81,32 +96,4 @@ class UserTemplatesExtension extends DataExtension {
 		}
 	}
 
-}
-
-class UserTemplatesControllerExtension extends Extension {
-
-	public function updateViewer($action, $viewer) {
-		$master = $this->owner->data()->effectiveTemplate('Master');
-		if ($master && $master->ID) {
-			// set the main template
-			$master->includeRequirements();
-			$viewer->setTemplateFile('main', $master->getTemplateFile());
-		}
-
-		$layout = $this->owner->data()->effectiveTemplate('Layout', $action);
-
-		if ($layout && $layout->ID) {
-			$layout->includeRequirements();
-			$viewer->setTemplateFile('Layout', $layout->getTemplateFile());
-		}
-	}
-    
-    /**
-     * Update the list of templates used by mediawesome
-     * 
-     * @param array $templates
-     */
-    public function updateTemplates(&$templates) {
-        $templates = $this->owner->getViewer('index');
-    }
 }

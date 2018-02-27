@@ -1,5 +1,7 @@
 <?php
 
+namespace Symbiote\UserTemplates\Tests;
+
 class TestUserTemplatesExtension extends SapphireTest {
 	protected $requiredExtensions = array(
 		"SiteTree" => array("UserTemplatesExtension"),

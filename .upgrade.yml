@@ -1,0 +1,6 @@
+mappings:
+  UserTemplatesExtension: Symbiote\UserTemplates\UserTemplatesExtension
+  UserTemplatesControllerExtension: Symbiote\UserTemplates\UserTemplatesControllerExtension
+  UserTemplate: Symbiote\UserTemplates\UserTemplate
+  UserTemplateAdmin: Symbiote\UserTemplates\UserTemplateAdmin
+  UserTemplatesSSViewer: Symbiote\UserTemplates\UserTemplatesSSViewer
