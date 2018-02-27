@@ -19,11 +19,20 @@
         "symbiote/silverstripe-multivaluefield": "~5.0",
         "silverstripe/framework": "~4.0"
     },
-	"extra": {
-		"branch-alias": {
-			"dev-master": "2.0.x-dev"
-		}
-	},
+    "autoload": {
+        "psr-4": {
+            "Symbiote\\UserTemplates\\": "src/",
+            "Symbiote\\UserTemplates\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.0.x-dev"
+        },
+        "expose": [
+            "client/images"
+        ]
+    },
     "support": {
         "issues": "https://github.com/nyeholt/silverstripe-usertemplates/issues"
     },

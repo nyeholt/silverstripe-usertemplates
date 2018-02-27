@@ -1,6 +1,6 @@
 <?php
 
-namespace Symbiote\UserTemplates;
+namespace Symbiote\UserTemplates\Tests;
 
 class TestUserTemplatesExtension extends SapphireTest {
 	protected $requiredExtensions = array(
