@@ -182,7 +182,7 @@ DOC;
 	 * @return string
 	 */
 	protected function getCacheFilename() {
-		$dir = BASE_PATH . '/usertemplates/template-cache/' . $this->Use . '/';
+		$dir = TEMP_PATH . '/usertemplates/template-cache/' . $this->Use . '/';
 		Filesystem::makeFolder($dir);
         $dateStamp = strtotime($this->LastEdited);
 		$file = $dir . '/' . $this->Title . '-' . $dateStamp . '.ss';
