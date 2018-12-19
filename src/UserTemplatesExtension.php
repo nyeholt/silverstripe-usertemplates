@@ -35,7 +35,12 @@ class UserTemplatesExtension extends DataExtension {
     
     public function updateCMSFields(FieldList $fields)
     {
-        $fields->addFieldsToTab('Root.Main', LiteralField::create('TemplateWarning', '<div class="message alert">This page has a custom template applied. This can be changed on the Settings tab</div>'), 'Title');
+        $effectiveMaster = $this->effectiveTemplate();
+        $effectiveLayout = $this->effectiveTemplate('Layout');
+        
+        if ($effectiveLayout || $effectiveMaster) {
+            $fields->addFieldsToTab('Root.Main', LiteralField::create('TemplateWarning', '<div class="message alert">This page has a custom template applied. This can be changed on the Settings tab</div>'), 'Title');
+        }
     }
 
 	public function updateSettingsFields(FieldList $fields) {
