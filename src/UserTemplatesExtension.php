@@ -12,6 +12,8 @@ use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\ReadonlyField;
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\Core\Extension;
+use SilverStripe\Forms\HeaderField;
+use SilverStripe\Forms\LiteralField;
 
 
 
@@ -29,7 +31,12 @@ class UserTemplatesExtension extends DataExtension {
 
 	private static $defaults = array(
 		'InheritTemplateSettings'		=> 1
-	);
+    );
+    
+    public function updateCMSFields(FieldList $fields)
+    {
+        $fields->addFieldsToTab('Root.Main', LiteralField::create('TemplateWarning', '<div class="message alert">This page has a custom template applied. This can be changed on the Settings tab</div>'), 'Title');
+    }
 
 	public function updateSettingsFields(FieldList $fields) {
 		$layouts = DataList::create(UserTemplate::class)->filter(array('Use' => 'Layout'));
