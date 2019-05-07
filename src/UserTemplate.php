@@ -3,7 +3,6 @@
 namespace Symbiote\UserTemplates;
 
 use Symbiote\MultiValueField\Fields\KeyValueField;
-use Symbiote\UserTemplates\UserTemplate;
 
 use SilverStripe\AssetAdmin\Forms\UploadField;
 use SilverStripe\Assets\File;
