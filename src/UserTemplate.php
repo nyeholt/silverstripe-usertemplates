@@ -28,7 +28,7 @@ use SilverStripe\View\Requirements;
 class UserTemplate extends DataObject implements PermissionProvider{
 
     private static $table_name = 'UserTemplate';
-    
+
 	private static $db = array(
 		'Title'				=> 'Varchar',
 		'Description'		=> 'Varchar',
@@ -208,7 +208,7 @@ DOC;
 		}
 
 	}
-	
+
 	public function canView($member = null, $context = array()){
 		return true;
 	}
@@ -245,5 +245,5 @@ DOC;
 			)
 		);
 	}
-	
+
 }
