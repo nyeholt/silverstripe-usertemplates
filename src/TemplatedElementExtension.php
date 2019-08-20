@@ -30,9 +30,9 @@ class TemplatedElementExtension extends DataExtension
         'RenderWithTemplate' => 'Varchar(128)', // allows developers access to specify a different template at create
     );
 
-	private static $has_one = array(
-		'LayoutTemplate' => UserTemplate::class
-	);
+    private static $has_one = array(
+        'LayoutTemplate' => UserTemplate::class
+    );
 
     public function onBeforeWrite()
     {
@@ -50,7 +50,7 @@ class TemplatedElementExtension extends DataExtension
         $fields->removeByName('LayoutTemplateID');
 
         if (Permission::check('ADMIN')) {
-			// get the list of templates
+            // get the list of templates
             $fields->addFieldToTab(
                 'Root.Settings',
                 DropdownField::create(
@@ -66,16 +66,7 @@ class TemplatedElementExtension extends DataExtension
     {
         $layouts = DataList::create(UserTemplate::class)->filter(array('Use' => 'Layout'));
 
-        $themeDir = Config::inst()->get(SSViewer::class, 'theme');
-        $templates = array();
-        if (strlen($themeDir)) {
-            $path = Director::baseFolder() . '/themes/' . $themeDir . '/templates/elements/*.ss';
-            $files = glob($path);
-            foreach ($files as $filename) {
-                $templateName = str_replace('.ss', '', basename($filename));
-                $templates[$templateName] = $templateName;
-            }
-        }
+        $templates = $this->fileBasedTemplates();
 
         if ($layouts) {
             foreach ($layouts->map() as $ID => $title) {
@@ -83,6 +74,21 @@ class TemplatedElementExtension extends DataExtension
             }
         }
 
+        return $templates;
+    }
+
+    protected function fileBasedTemplates()
+    {
+        $templates = array('' => 'None');
+        foreach (glob(Director::baseFolder() . '/' . THEMES_DIR . '/*', GLOB_ONLYDIR) as $theme) {
+            $themeName = ucfirst(basename($theme));
+            if (is_dir($theme . '/element-templates')) {
+                foreach (glob($theme . '/element-templates/*.ss') as $templateFile) {
+                    $templateFile = str_replace(Director::baseFolder() . '/', '', $templateFile);
+                    $templates[$templateFile] = $themeName . ' - ' . basename($templateFile);
+                }
+            }
+        }
 
         return $templates;
     }
