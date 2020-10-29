@@ -109,7 +109,7 @@ class UserTemplatesExtension extends DataExtension {
 		if ($this->owner->InheritTemplateSettings && $this->owner->ParentID) {
             $parent = $this->owner->Parent();
             if ($parent && $parent->hasMethod('effectiveTemplate')) {
-                return $this->owner->Parent()->effectiveTemplate($type, $action, $forItem);
+                return $parent->effectiveTemplate($type, $action, $forItem);
             }
 		}
 	}
