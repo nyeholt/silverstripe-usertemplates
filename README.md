@@ -1,5 +1,7 @@
 # UserTemplates
 
+TEST
+
 Allows cms users to apply templates that are created and defined within the
 CMS directly, including CSS and JavaScript files, to trees of content. 
 
