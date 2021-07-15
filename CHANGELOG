@@ -4,6 +4,7 @@
 * Updated Readme.
 * Moved getting started and Usage to docs
 * Added LICENSE and CONTRIBUTING
+* Added asset-admin dependency to composer.json
 * Updated the CMS icon size and colour to match the other icons
 
 2013-09-05 v1.0.0
