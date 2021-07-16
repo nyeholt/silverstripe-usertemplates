@@ -1,89 +1,32 @@
 # UserTemplates
 
+[![Build Status](https://travis-ci.org/symbiote/silverstripe-usertemplates.svg?branch=master)](https://travis-ci.org/symbiote/silverstripe-usertemplates)
+[![Latest Stable Version](https://poser.pugx.org/symbiote/silverstripe-usertemplates/version.svg)](https://github.com/symbiote/silverstripe-usertemplates/releases)
+[![Latest Unstable Version](https://poser.pugx.org/symbiote/silverstripe-usertemplates/v/unstable.svg)](https://packagist.org/packages/symbiote/silverstripe-usertemplates)
+[![Total Downloads](https://poser.pugx.org/symbiote/silverstripe-usertemplates/downloads.svg)](https://packagist.org/packages/symbiote/silverstripe-usertemplates)
+[![License](https://poser.pugx.org/symbiote/silverstripe-usertemplates/license.svg)](https://github.com/symbiote/silverstripe-usertemplates/blob/master/LICENSE.md)
+
 Allows cms users to apply templates that are created and defined within the
 CMS directly, including CSS and JavaScript files, to trees of content. 
 
-## Getting started
-
-Add the following to your Page\_Controller class:
-
-    public function getViewer($action) {
-        $viewer = parent::getViewer($action);
-
-		$this->extend('updateViewer', $action, $viewer);
-
-        return $viewer;
-    }
-
-
-Add configuration to bind the extension into place
+## Composer Install
 
 ```
-SilverStripe\CMS\Model\SiteTree:
-  extensions: 
-    - Symbiote\UserTemplates\UserTemplatesExtension
-PageController:
-  extensions:
-    - Symbiote\UserTemplates\UserTemplatesControllerExtension
+composer require symbiote/silverstripe-usertemplates dev-master
 ```
 
-## Usage
+## Requirements
 
-Create a new template from the admin/templates section.
+* silverstripe/cms: ~4.0
+* symbiote/silverstripe-multivaluefield: ~5.0
+* silverstripe/framework: ~4.0
 
-The **Use** of the template indicates whether it will be applied as a 'main'
-template or just the 'Layout' of the page.
+## Documentation
 
-The **Content** field should be defined as per a normal SilverStripe template
-
-Any CSS or JS files uploaded will be included using Requirements:: calls
-
-
-On a page, navigate to the Settings -> Theme tab. Select the relevant template
-to use.
-
-If "Inherit" is set, then any parent page with a custom template defined will
-be used.
-
-
-## Templated elements
-
-You'll need to add a custom ElementArea.ss template to your theme (on the path
-`themes/your-theme/templates/DNADesign/Elemental/Models/ElementalArea.ss`) 
-that contains something similar to the following
-
-```
-<% if $ElementControllers.count > 0 %>
-    <% loop $ElementControllers %>
-        <div class="ElementAreaElement <% if Last %>ElementAreaElement--Last<% end_if %>">
-            <% if $isTemplated %>
-            $TemplatedContent
-            <% else %>
-            $Me
-            <% end_if %>
-        </div>
-    <% end_loop %>
-<% end_if %>
-
-
-```
-
-to make use of it. 
-
-Then, bind the extensions
-
-```
----
-Name: element_config
----
-DNADesign\Elemental\Models\BaseElement:
-  extensions:
-    - Symbiote\UserTemplates\TemplatedElementExtension
-
-DNADesign\Elemental\Controllers\ElementController:
-  extensions:
-    - Symbiote\UserTemplates\TemplatedElementControllerExtension
-```
+* [Getting started](docs/en/getting-started.md)
+* [Usage](docs/en/usage.md)
+* [License](LICENSE.md)
+* [Contributing](CONTRIBUTING.md)
 
 ## Credits
 
