@@ -1,6 +1,6 @@
 # UserTemplates
 
-[![Build Status](https://travis-ci.org/symbiote/silverstripe-usertemplates.svg?branch=master)](https://travis-ci.org/symbiote/silverstripe-usertemplates)
+[![Build Status](https://api.travis-ci.com/nyeholt/silverstripe-usertemplates.svg)](https://travis-ci.org/symbiote/silverstripe-usertemplates)
 [![Latest Stable Version](https://poser.pugx.org/symbiote/silverstripe-usertemplates/version.svg)](https://github.com/symbiote/silverstripe-usertemplates/releases)
 [![Latest Unstable Version](https://poser.pugx.org/symbiote/silverstripe-usertemplates/v/unstable.svg)](https://packagist.org/packages/symbiote/silverstripe-usertemplates)
 [![Total Downloads](https://poser.pugx.org/symbiote/silverstripe-usertemplates/downloads.svg)](https://packagist.org/packages/symbiote/silverstripe-usertemplates)
