@@ -2,7 +2,11 @@
 
 namespace Symbiote\UserTemplates\Tests;
 
+use Page;
+use PageController;
+use Symbiote\UserTemplates\UserTemplate;
 use SilverStripe\Dev\SapphireTest;
+
 
 class UserTemplatesExtensionTest extends SapphireTest
 {
