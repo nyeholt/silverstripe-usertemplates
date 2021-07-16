@@ -37,7 +37,14 @@ class UserTemplatesExtension extends DataExtension
         $effectiveLayout = $this->effectiveTemplate('Layout');
 
         if (($effectiveLayout && $effectiveLayout->ID) || ($effectiveMaster && $effectiveMaster->ID)) {
-            $fields->addFieldsToTab('Root.Main', LiteralField::create('TemplateWarning', '<div class="message alert">This page has a custom template applied. This can be changed on the Settings tab</div>'), 'Title');
+            $fields->addFieldsToTab(
+                'Root.Main',
+                LiteralField::create(
+                    'TemplateWarning',
+                    '<div class="message alert">This page has a custom template applied. This can be changed on the Settings tab</div>'
+                ),
+                'Title'
+            );
         }
     }
 
@@ -46,20 +53,20 @@ class UserTemplatesExtension extends DataExtension
         $layouts = DataList::create(UserTemplate::class)->filter(array('Use' => 'Layout'));
         $masters = DataList::create(UserTemplate::class)->filter(array('Use' => 'Master'));
 
-        $fields->addFieldToTab('Root.Theme', DropdownField::create('MasterTemplateID', 'Master Template', $masters->map(), '', null)->setEmptyString('None'));
-        $fields->addFieldToTab('Root.Theme', DropdownField::create('LayoutTemplateID', 'Layout Template', $layouts->map(), '', null)->setEmptyString('None'));
-        $fields->addFieldToTab('Root.Theme', CheckboxField::create('InheritTemplateSettings', 'Inherit Settings'));
-        $fields->addFieldToTab('Root.Theme', CheckboxField::create('NotInherited', 'Don\'t cascade these templates to children'));
+        $fields->addFieldToTab('Root.Theme', DropdownField::create('MasterTemplateID', 'Master Template', $masters->map(), '', null)->setEmptyString(_t(__CLASS__ . '.NONE', 'None')));
+        $fields->addFieldToTab('Root.Theme', DropdownField::create('LayoutTemplateID', 'Layout Template', $layouts->map(), '', null)->setEmptyString(_t(__CLASS__ . '.NONE', 'None')));
+        $fields->addFieldToTab('Root.Theme', CheckboxField::create('InheritTemplateSettings', _t(__CLASS__ . '.InheritTemplateSettings', 'Inherit settings')));
+        $fields->addFieldToTab('Root.Theme', CheckboxField::create('NotInherited', _t(__CLASS__ . '.NotInherited', "Don't cascade these templates to children")));
 
         $effectiveMaster = $this->effectiveTemplate();
         $effectiveLayout = $this->effectiveTemplate('Layout');
 
         if ($effectiveMaster) {
-            $fields->addFieldToTab('Root.Theme', ReadonlyField::create('EffectiveMaster', 'Effective master template', $effectiveMaster->Title));
+            $fields->addFieldToTab('Root.Theme', ReadonlyField::create('EffectiveMaster', _t(__CLASS__ . '.EffectiveMaster', 'Effective master template'), $effectiveMaster->Title));
         }
 
         if ($effectiveLayout) {
-            $fields->addFieldToTab('Root.Theme', ReadonlyField::create('EffectiveLayout', 'Effective layout template', $effectiveLayout->Title));
+            $fields->addFieldToTab('Root.Theme', ReadonlyField::create('EffectiveLayout', _t(__CLASS__ . '.EffectiveLayout', 'Effective layout template'), $effectiveLayout->Title));
         }
 
         return $fields;
