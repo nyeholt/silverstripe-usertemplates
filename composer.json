@@ -20,6 +20,7 @@
         "silverstripe/framework": "~4.0",
         "silverstripe/asset-admin": "~1"
     },
+    "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
             "Symbiote\\UserTemplates\\": "src/",
