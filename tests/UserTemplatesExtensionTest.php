@@ -4,7 +4,10 @@ namespace Symbiote\UserTemplates\Tests;
 
 use Page;
 use PageController;
+use SilverStripe\CMS\Model\SiteTree;
 use Symbiote\UserTemplates\UserTemplate;
+use Symbiote\UserTemplates\UserTemplatesExtension;
+use Symbiote\UserTemplates\UserTemplatesControllerExtension;
 use SilverStripe\Dev\SapphireTest;
 
 
@@ -12,9 +15,9 @@ class UserTemplatesExtensionTest extends SapphireTest
 {
     protected $usesDatabase = true;
 
-	protected $requiredExtensions = array(
-		"SiteTree" => array("UserTemplatesExtension"),
-		'Page_Controller' => array('UserTemplatesControllerExtension')
+	protected static $required_extensions = array(
+		SiteTree::class => array(UserTemplatesExtension::class),
+		PageController::class => array(UserTemplatesControllerExtension::class)
 	);
 
 	public function testCreateUserDefinedTemplate()
@@ -43,8 +46,12 @@ class UserTemplatesExtensionTest extends SapphireTest
 		$page->LayoutTemplateID = $ut->ID;
 		$page->write();
 
+        $action = 'index';
 		$ctrl = PageController::create($page);
-		$viewer = $ctrl->getViewer('index');
+		$viewer = $ctrl->getViewer($action);
+
+        // to mimic the patch needed for this module
+        $ctrl->extend('updateViewer', $action, $viewer);
 
 		$out = $viewer->process($ctrl);
 		$this->assertTrue(strpos($out, 'UserTemplate 1 PageContent') > 0);
