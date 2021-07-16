@@ -4,7 +4,7 @@ namespace Symbiote\UserTemplates\Tests;
 
 use SilverStripe\Dev\SapphireTest;
 
-class TestUserTemplatesExtension extends SapphireTest
+class UserTemplatesExtensionTest extends SapphireTest
 {
 	protected $requiredExtensions = array(
 		"SiteTree" => array("UserTemplatesExtension"),
