@@ -10,6 +10,8 @@ use SilverStripe\Dev\SapphireTest;
 
 class UserTemplatesExtensionTest extends SapphireTest
 {
+    protected $usesDatabase = true;
+
 	protected $requiredExtensions = array(
 		"SiteTree" => array("UserTemplatesExtension"),
 		'Page_Controller' => array('UserTemplatesControllerExtension')
