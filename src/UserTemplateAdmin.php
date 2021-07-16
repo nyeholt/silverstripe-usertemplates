@@ -18,5 +18,4 @@ class UserTemplateAdmin extends ModelAdmin
     private static $url_segment = 'templates';
     private static $managed_models = array(UserTemplate::class);
     private static $menu_icon = 'font-icon-p-code';
-
 }
