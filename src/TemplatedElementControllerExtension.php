@@ -13,7 +13,7 @@ class TemplatedElementControllerExtension extends Extension
     public function isTemplated()
     {
         $widget = $this->owner->getElement();
-        return $widget && ($widget->LayoutTemplateID || strlen($widget->RenderWithTemplate));
+        return $widget && ($widget->LayoutTemplateID || strlen($widget->RenderWithTemplate ?? ""));
     }
 
     public function TemplatedContent()
