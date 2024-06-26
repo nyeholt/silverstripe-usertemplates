@@ -25,10 +25,9 @@ use SilverStripe\View\Requirements;
  */
 class UserTemplate extends DataObject implements PermissionProvider
 {
-
     private static $table_name = 'UserTemplate';
 
-    private static $db = array(
+    private static $db = [
         'Title'             => 'Varchar',
         'Description'       => 'Varchar',
         'Use'               => "Enum('Layout,Master')",
@@ -36,13 +35,12 @@ class UserTemplate extends DataObject implements PermissionProvider
         'ContentFile'       => 'Varchar(132)',
         'StrictActions'     => DBBoolean::class,
         'ActionTemplates'   => 'MultiValueField',
-    );
+    ];
 
-    private static $many_many = array(
+    private static $many_many = [
         'CustomCSSFiles' => File::class,
         'CustomJSFiles' => File::class
-    );
-
+    ];
 
     /**
      * folder for custom javascript files
@@ -60,8 +58,14 @@ class UserTemplate extends DataObject implements PermissionProvider
     {
         $fields = parent::getCMSFields();
 
-        $cssFiles = new UploadField('CustomCSSFiles', _t('UserTemplatesExtension.CustomCSSFiles', "Custom CSS Files"));
-        $jsFiles = new UploadField('CustomJSFiles', _t('UserTemplatesExtension.CustomJSFiles', "Custom JS Files"));
+        $cssFiles = new UploadField(
+            'CustomCSSFiles',
+            _t('UserTemplatesExtension.CustomCSSFiles', "Custom CSS Files")
+        );
+        $jsFiles = new UploadField(
+            'CustomJSFiles',
+            _t('UserTemplatesExtension.CustomJSFiles', "Custom JS Files")
+        );
         $cssFiles->setFolderName(self::$css_folder);
         $jsFiles->setFolderName(self::$js_folder);
 
@@ -70,13 +74,25 @@ class UserTemplate extends DataObject implements PermissionProvider
 
         $templates = $this->fileBasedTemplates();
         if (count($templates)) {
-            $fields->addFieldToTab('Root.Main', $dd = DropdownField::create('ContentFile', _t('UserTemplatesExtension.CONTENT_FILE', 'File containing template'), $templates)->setEmptyString('-- none --'));
+            $fields->addFieldToTab(
+                'Root.Main',
+                $dd = DropdownField::create(
+                    'ContentFile',
+                    _t('UserTemplatesExtension.CONTENT_FILE', 'File containing template'),
+                    $templates
+                )->setEmptyString('-- none --')
+            );
             $dd->setRightTitle('If selected, any Content set above will be ignored');
         } else {
             $fields->removeByName('ContentFile');
         }
 
-        $fields->push($strict = CheckboxField::create('StrictActions', _t('UserTemplates.STRICT_ACTIONS', 'Require actions to be explicitly overridden')));
+        $fields->push(
+            $strict = CheckboxField::create(
+                'StrictActions',
+                _t('UserTemplates.STRICT_ACTIONS', 'Require actions to be explicitly overridden')
+            )
+        );
         $text = <<<DOC
    When applied to a page type that has sub-actions, an action template will be used ONLY if the action is listed below, and this main
 	   template will only be used for the 'index' action. If this is not checked, then this template will be used for ALL actions
@@ -84,11 +100,22 @@ class UserTemplate extends DataObject implements PermissionProvider
 DOC;
         $strict->setRightTitle(_t('UserTemplates.STRICT_HELP', $text));
 
-        $templates = DataList::create(UserTemplate::class)->filter(array('ID:not' => $this->ID));
+        $templates = DataList::create(UserTemplate::class)->filter(['ID:not' => $this->ID]);
         if ($templates->count()) {
             $templates = $templates->map();
-            $fields->addFieldToTab('Root.Main', $kv = new KeyValueField('ActionTemplates', _t('UserTemplates.ACTION_TEMPLATES', 'Action specific templates'), array(), $templates));
-            $kv->setRightTitle(_t('UserTemplates.ACTION_TEMPLATES_HELP', 'Specify an action name and select another user defined template to handle a specific action. Only used for Layout templates'));
+            $fields->addFieldToTab(
+                'Root.Main',
+                $kv = new KeyValueField(
+                    'ActionTemplates',
+                    _t('UserTemplates.ACTION_TEMPLATES', 'Action specific templates'),
+                    [],
+                    $templates
+                )
+            );
+            $kv->setRightTitle(_t(
+                'UserTemplates.ACTION_TEMPLATES_HELP',
+                'Specify an action name and select another user defined template to handle a specific action. Only used for Layout templates'
+            ));
         } else {
             $fields->removeByName('ActionTemplates');
         }
@@ -102,7 +129,7 @@ DOC;
 
     protected function fileBasedTemplates()
     {
-        $templates = array('' => 'None');
+        $templates = ['' => 'None'];
         foreach (glob(Director::baseFolder() . '/' . THEMES_DIR . '/*', GLOB_ONLYDIR) as $theme) {
             $themeName = ucfirst(basename($theme));
             if (is_dir($theme . '/user-templates')) {
@@ -121,7 +148,7 @@ DOC;
         parent::onBeforeWrite();
         $this->Title = FileNameFilter::create()->filter($this->Title);
 
-        if (strlen($this->ContentFile)) {
+        if (strlen($this->ContentFile ?? '')) {
             $templates = $this->fileBasedTemplates();
             if (!isset($templates[$this->ContentFile])) {
                 $this->ContentFile = '';
@@ -164,7 +191,7 @@ DOC;
      */
     public function getTemplateFile()
     {
-        if (strlen($this->ContentFile)) {
+        if (strlen($this->ContentFile ?? '')) {
             $templateFile = Director::baseFolder() . '/' . $this->ContentFile;
             if (file_exists($templateFile)) {
                 return $templateFile;
@@ -216,46 +243,46 @@ DOC;
         }
     }
 
-    public function canView($member = null, $context = array())
+    public function canView($member = null, $context = [])
     {
         return true;
     }
 
-    public function canEdit($member = null, $context = array())
+    public function canEdit($member = null, $context = [])
     {
         return Permission::check('ADMIN') || Permission::check('TEMPLATE_EDIT');
     }
 
-    public function canDelete($member = null, $context = array())
+    public function canDelete($member = null, $context = [])
     {
         return Permission::check('ADMIN') || Permission::check('TEMPLATE_DELETE');
     }
 
-    public function canCreate($member = null, $context = array())
+    public function canCreate($member = null, $context = [])
     {
         return Permission::check('ADMIN') || Permission::check('TEMPLATE_CREATE');
     }
 
-    public function canPublish($member = null, $context = array())
+    public function canPublish($member = null, $context = [])
     {
         return Permission::check('ADMIN') || Permission::check('TEMPLATE_PUBLISH');
     }
 
     public function providePermissions()
     {
-        return array(
-            'TEMPLATE_EDIT' => array(
+        return [
+            'TEMPLATE_EDIT' => [
                 'name' => 'Edit a Template',
                 'category' => 'Template',
-            ),
-            'TEMPLATE_DELETE' => array(
+            ],
+            'TEMPLATE_DELETE' => [
                 'name' => 'Delete a Template',
                 'category' => 'Template',
-            ),
-            'TEMPLATE_CREATE' => array(
+            ],
+            'TEMPLATE_CREATE' => [
                 'name' => 'Create a Template',
                 'category' => 'Template'
-            )
-        );
+            ]
+        ];
     }
 }

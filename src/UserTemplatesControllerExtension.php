@@ -13,7 +13,6 @@ use SilverStripe\Control\Controller;
 
 class UserTemplatesControllerExtension extends Extension
 {
-
     private static $use_custom_view = null;
 
     public function updateViewer($action, $viewer)

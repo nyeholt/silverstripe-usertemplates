@@ -25,14 +25,13 @@ use SilverStripe\ORM\DataExtension;
  */
 class TemplatedElementExtension extends DataExtension
 {
-
-    private static $db = array(
+    private static $db = [
         'RenderWithTemplate' => 'Varchar(128)', // allows developers access to specify a different template at create
-    );
+    ];
 
-    private static $has_one = array(
+    private static $has_one = [
         'LayoutTemplate' => UserTemplate::class
-    );
+    ];
 
     public function onBeforeWrite()
     {
@@ -45,7 +44,6 @@ class TemplatedElementExtension extends DataExtension
 
     public function updateCMSFields(FieldList $fields)
     {
-
         $fields->removeByName('RenderWithTemplate');
         $fields->removeByName('LayoutTemplateID');
 
@@ -64,7 +62,7 @@ class TemplatedElementExtension extends DataExtension
 
     public function getElementTemplateList()
     {
-        $layouts = DataList::create(UserTemplate::class)->filter(array('Use' => 'Layout'));
+        $layouts = DataList::create(UserTemplate::class)->filter(['Use' => 'Layout']);
 
         $templates = $this->fileBasedTemplates();
 
@@ -79,7 +77,7 @@ class TemplatedElementExtension extends DataExtension
 
     protected function fileBasedTemplates()
     {
-        $templates = array('' => 'None');
+        $templates = ['' => 'None'];
         foreach (glob(Director::baseFolder() . '/' . THEMES_DIR . '/*', GLOB_ONLYDIR) as $theme) {
             $themeName = ucfirst(basename($theme));
             if (is_dir($theme . '/element-templates')) {
