@@ -16,20 +16,19 @@ use SilverStripe\Forms\LiteralField;
 
 class UserTemplatesExtension extends DataExtension
 {
-
-    private static $db = array(
+    private static $db = [
         'InheritTemplateSettings'   => DBBoolean::class,
         'NotInherited'              => DBBoolean::class,
-    );
+    ];
 
-    private static $has_one = array(
+    private static $has_one = [
         'MasterTemplate'            => UserTemplate::class,
         'LayoutTemplate'            => UserTemplate::class,
-    );
+    ];
 
-    private static $defaults = array(
+    private static $defaults = [
         'InheritTemplateSettings'       => 1
-    );
+    ];
 
     public function updateCMSFields(FieldList $fields)
     {
@@ -50,23 +49,67 @@ class UserTemplatesExtension extends DataExtension
 
     public function updateSettingsFields(FieldList $fields)
     {
-        $layouts = DataList::create(UserTemplate::class)->filter(array('Use' => 'Layout'));
-        $masters = DataList::create(UserTemplate::class)->filter(array('Use' => 'Master'));
+        $layouts = DataList::create(UserTemplate::class)->filter(['Use' => 'Layout']);
+        $masters = DataList::create(UserTemplate::class)->filter(['Use' => 'Master']);
 
-        $fields->addFieldToTab('Root.Theme', DropdownField::create('MasterTemplateID', 'Master Template', $masters->map(), '', null)->setEmptyString(_t(__CLASS__ . '.NONE', 'None')));
-        $fields->addFieldToTab('Root.Theme', DropdownField::create('LayoutTemplateID', 'Layout Template', $layouts->map(), '', null)->setEmptyString(_t(__CLASS__ . '.NONE', 'None')));
-        $fields->addFieldToTab('Root.Theme', CheckboxField::create('InheritTemplateSettings', _t(__CLASS__ . '.InheritTemplateSettings', 'Inherit settings')));
-        $fields->addFieldToTab('Root.Theme', CheckboxField::create('NotInherited', _t(__CLASS__ . '.NotInherited', "Don't cascade these templates to children")));
+        $fields->addFieldToTab(
+            'Root.Theme',
+            DropdownField::create(
+                'MasterTemplateID',
+                'Master Template',
+                $masters->map(),
+                '',
+                null
+            )->setEmptyString(_t(self::class . '.NONE', 'None'))
+        );
+        $fields->addFieldToTab(
+            'Root.Theme',
+            DropdownField::create(
+                'LayoutTemplateID',
+                'Layout Template',
+                $layouts->map(),
+                '',
+                null
+            )->setEmptyString(_t(self::class . '.NONE', 'None'))
+        );
+        $fields->addFieldToTab(
+            'Root.Theme',
+            CheckboxField::create(
+                'InheritTemplateSettings',
+                _t(self::class . '.InheritTemplateSettings', 'Inherit settings')
+            )
+        );
+        $fields->addFieldToTab(
+            'Root.Theme',
+            CheckboxField::create(
+                'NotInherited',
+                _t(self::class . '.NotInherited', "Don't cascade these templates to children")
+            )
+        );
 
         $effectiveMaster = $this->effectiveTemplate();
         $effectiveLayout = $this->effectiveTemplate('Layout');
 
         if ($effectiveMaster) {
-            $fields->addFieldToTab('Root.Theme', ReadonlyField::create('EffectiveMaster', _t(__CLASS__ . '.EffectiveMaster', 'Effective master template'), $effectiveMaster->Title));
+            $fields->addFieldToTab(
+                'Root.Theme',
+                ReadonlyField::create(
+                    'EffectiveMaster',
+                    _t(self::class . '.EffectiveMaster', 'Effective master template'),
+                    $effectiveMaster->Title
+                )
+            );
         }
 
         if ($effectiveLayout) {
-            $fields->addFieldToTab('Root.Theme', ReadonlyField::create('EffectiveLayout', _t(__CLASS__ . '.EffectiveLayout', 'Effective layout template'), $effectiveLayout->Title));
+            $fields->addFieldToTab(
+                'Root.Theme',
+                ReadonlyField::create(
+                    'EffectiveLayout',
+                    _t(self::class . '.EffectiveLayout', 'Effective layout template'),
+                    $effectiveLayout->Title
+                )
+            );
         }
 
         return $fields;

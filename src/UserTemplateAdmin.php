@@ -15,6 +15,6 @@ class UserTemplateAdmin extends ModelAdmin
 {
     private static $menu_title = 'Templates';
     private static $url_segment = 'templates';
-    private static $managed_models = array(UserTemplate::class);
-    private static $menu_icon = 'symbiote/silverstripe-usertemplates: client/images/icons8-template-20.png';
+    private static $managed_models = [UserTemplate::class];
+    private static $menu_icon_class = 'font-icon-code';
 }

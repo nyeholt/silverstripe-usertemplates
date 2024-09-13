@@ -10,102 +10,101 @@ use Symbiote\UserTemplates\UserTemplatesExtension;
 use Symbiote\UserTemplates\UserTemplatesControllerExtension;
 use SilverStripe\Dev\SapphireTest;
 
-
 class UserTemplatesExtensionTest extends SapphireTest
 {
     protected $usesDatabase = true;
 
-	protected static $required_extensions = array(
-		SiteTree::class => array(UserTemplatesExtension::class),
-		PageController::class => array(UserTemplatesControllerExtension::class)
-	);
+    protected static $required_extensions = [
+        SiteTree::class => [UserTemplatesExtension::class],
+        PageController::class => [UserTemplatesControllerExtension::class]
+    ];
 
-	public function testCreateUserDefinedTemplate()
+    public function testCreateUserDefinedTemplate()
     {
-		$this->logInWithPermission();
+        $this->logInWithPermission();
 
-		$ut = new UserTemplate();
-		$ut->Title = 'Template 1';
-		$ut->Use = 'Layout';
-		$ut->Content = 'UserTemplate 1 $Content';
+        $ut = new UserTemplate();
+        $ut->Title = 'Template 1';
+        $ut->Use = 'Layout';
+        $ut->Content = 'UserTemplate 1 $Content';
 
-		$ut->write();
+        $ut->write();
 
-		$page = Page::create();
-		$page->Title = 'My page';
-		$page->Content = 'PageContent';
+        $page = Page::create();
+        $page->Title = 'My page';
+        $page->Content = 'PageContent';
 
-		$page->write();
+        $page->write();
 
-		$out = $page->renderWith(array('Page', 'Page'));
+        $out = $page->renderWith(['Page', 'Page']);
 
-		$this->assertTrue(strpos($out, 'PageContent') > 0);
-		$this->assertTrue(strpos($out, 'UserTemplate 1') === false);
+        $this->assertTrue(strpos($out, 'PageContent') > 0);
+        $this->assertTrue(!str_contains($out, 'UserTemplate 1'));
 
-		// bind the user template
-		$page->LayoutTemplateID = $ut->ID;
-		$page->write();
+        // bind the user template
+        $page->LayoutTemplateID = $ut->ID;
+        $page->write();
 
         $action = 'index';
-		$ctrl = PageController::create($page);
-		$viewer = $ctrl->getViewer($action);
+        $ctrl = PageController::create($page);
+        $viewer = $ctrl->getViewer($action);
 
         // to mimic the patch needed for this module
         $ctrl->extend('updateViewer', $action, $viewer);
 
-		$out = $viewer->process($ctrl);
-		$this->assertTrue(strpos($out, 'UserTemplate 1 PageContent') > 0);
-	}
+        $out = $viewer->process($ctrl);
+        $this->assertTrue(strpos((string) $out, 'UserTemplate 1 PageContent') > 0);
+    }
 
-	public function testRegenerateOnDelete()
+    public function testRegenerateOnDelete()
     {
-		$this->logInWithPermission();
+        $this->logInWithPermission();
 
-		$ut = new UserTemplate();
-		$ut->Title = 'Template 1';
-		$ut->Use = 'Layout';
-		$ut->Content = 'UserTemplate 1 $Content';
+        $ut = new UserTemplate();
+        $ut->Title = 'Template 1';
+        $ut->Use = 'Layout';
+        $ut->Content = 'UserTemplate 1 $Content';
 
-		$ut->write();
+        $ut->write();
 
-		$file = $ut->getTemplateFile();
+        $file = $ut->getTemplateFile();
 
-		clearstatcache();
-		$size = filesize($file);
-		$this->assertTrue($size > 0);
+        clearstatcache();
+        $size = filesize($file);
+        $this->assertTrue($size > 0);
 
-		unlink($file);
+        unlink($file);
 
-		$file = $ut->getTemplateFile();
+        $file = $ut->getTemplateFile();
 
-		clearstatcache();
-		$size = filesize($file);
-		$this->assertTrue($size > 0);
-	}
+        clearstatcache();
+        $size = filesize($file);
+        $this->assertTrue($size > 0);
+    }
 
     public function testRegenerateOnChange()
-   {
-       $this->logInWithPermission();
+    {
+        $this->logInWithPermission();
 
-		$ut = new UserTemplate();
-		$ut->Title = 'Template 1';
-		$ut->Use = 'Layout';
-		$ut->Content = 'UserTemplate 1 $Content';
+        $ut = new UserTemplate();
+        $ut->Title = 'Template 1';
+        $ut->Use = 'Layout';
+        $ut->Content = 'UserTemplate 1 $Content';
 
-		$ut->write();
+        $ut->write();
 
-		$file = $ut->getTemplateFile();
+        $file = $ut->getTemplateFile();
 
-       $ut->Content = "New template";
+        $ut->Content = "New template";
 
-       sleep(2);
-       $ut->write();
+        sleep(2);
+        $ut->write();
 
-       $nextFile = $ut->getTemplateFile();
+        $nextFile = $ut->getTemplateFile();
 
-       $basename = basename($nextFile);
+        $basename = basename($nextFile);
 
-       $this->assertNotEquals($file, $nextFile);
-       $this->assertEquals($ut->Title . '-' . strtotime($ut->LastEdited) . '.ss', $basename);
-   }
+        $this->assertNotEquals($file, $nextFile);
+        $this->assertEquals($ut->Title . '-' . strtotime($ut->LastEdited) . '.ss', $basename);
+    }
 }

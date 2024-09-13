@@ -17,9 +17,8 @@ composer require symbiote/silverstripe-usertemplates dev-master
 
 ## Requirements
 
-* silverstripe/cms: ~4.0
-* symbiote/silverstripe-multivaluefield: ~5.0
-* silverstripe/framework: ~4.0
+* silverstripe/cms: ^4 || ^5
+* symbiote/silverstripe-multivaluefield: ^5 || ^6
 
 ## Documentation
 
@@ -27,7 +26,3 @@ composer require symbiote/silverstripe-usertemplates dev-master
 * [Usage](docs/en/usage.md)
 * [License](LICENSE.md)
 * [Contributing](CONTRIBUTING.md)
-
-## Credits
-
-Icon via https://icons8.com/license/

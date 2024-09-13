@@ -11,9 +11,9 @@ class UserTemplateShortcode
 {
     public static function render_template($arguments, $content = null, $parser = null)
     {
-        $templateId = isset($arguments['id']) ? $arguments['id'] : null;
-        $name = isset($arguments['name']) ? $arguments['name'] : null;
-        $contextId = isset($arguments['context_id']) ? $arguments['context_id'] : null;
+        $templateId = $arguments['id'] ?? null;
+        $name = $arguments['name'] ?? null;
+        $contextId = $arguments['context_id'] ?? null;
 
         if (!$templateId && !$name) {
             return "Please specify a template id or name";
@@ -34,7 +34,7 @@ class UserTemplateShortcode
         $template = UserTemplate::get()->filter($filter)->first();
 
         if ($template && $template->canView()) {
-            $context = $curr ? $curr : $template;
+            $context = $curr ?: $template;
             return $context->renderWith($template->getTemplateFile());
         }
 

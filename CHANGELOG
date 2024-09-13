@@ -1,31 +1,5 @@
-2021-08-15 
-----------
+# Changelog
 
-* Updated Readme.
-* Moved getting started and Usage to docs
-* Added LICENSE and CONTRIBUTING
-* Added asset-admin dependency to composer.json
-* Updated the CMS icon size and colour to match the other icons
+For more information on changes and releases, please visit [Releases](https://github.com/nyeholt/silverstripe-usertemplates/releases).
 
-2013-09-05 v1.0.0
------------------
-
-* Added StrictActions option to allow for handling of sub-actions on pages
-
-2013-02-04 v0.3.0
------------------
-
-* Templates can now have 'sub templates' used for handling specific actions
-  instead of just being able to override for the 'index' action
-
-2013-01-17 v0.2.0
------------------
-
-* Can link a developer-defined template file on disk with a user-defined 
-  template in the CMS
-
-2013-01-14 v0.1.0
------------------
-
-* Added sufficient doco to actually have things work if you know what you're 
-  doing...
+This project adheres to [Semantic Versioning](http://semver.org/)
